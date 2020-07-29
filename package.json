@@ -1,5 +1,6 @@
 {
 	"name": "git-tag-push",
+	"publisher": "patrickfalknielsen",
 	"displayName": "Git Tag & Push",
 	"description": "Creates a git tag and pushes it afterwards",
 	"version": "1.0.0",
@@ -8,6 +9,11 @@
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"git",
+		"tag",
+		"push"
 	],
 	"activationEvents": [
 		"onCommand:extension.git-tag-and-push"
