@@ -3,7 +3,10 @@
 	"publisher": "patrickfalknielsen",
 	"displayName": "Git Tag & Push",
 	"description": "Creates a git tag and pushes it afterwards",
-	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/patrickfnielsen/vscode-git-tag-push.git"
+	},	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
