@@ -3,15 +3,19 @@
 	"publisher": "patrickfalknielsen",
 	"displayName": "Git Tag & Push",
 	"description": "Creates a git tag and pushes it afterwards",
+	"homepage": "https://github.com/patrickfnielsen/vscode-git-tag-push/blob/master/README.md",
+	"bugs": {
+		"url": "https://github.com/patrickfnielsen/vscode-git-tag-push/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/patrickfnielsen/vscode-git-tag-push.git"
-	},	"version": "1.0.0",
+	},	"version": "1.0.1",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
 	"categories": [
-		"Other"
+		"SCM Providers"
 	],
 	"keywords": [
 		"git",
