@@ -24,6 +24,22 @@ export function createTag(tag: string, message: string, cwd: string): Promise<un
     });
 }
 
+export function deleteTag(tag: string, cwd: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        child_process.exec(`${gitPath} tag -d ${tag}`, {
+            cwd: cwd
+        }, (error, stdout, stderr) => {
+            if (stderr && !/Deleted tag/.test(stderr)) {
+                return reject('TAG_DELETE_FAILED');
+            }
+            if (error) {
+                return reject('TAG_DELETE_FAILED');
+            }
+            resolve('TAG_DELETED');
+        });
+    });
+}
+
 export function pushWithTags(cwd: string): Promise<string> {
     return new Promise((resolve, reject) => {
         child_process.exec(gitPath + ' push --follow-tags', {
