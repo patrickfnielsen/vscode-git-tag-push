@@ -1,8 +1,8 @@
 {
 	"name": "git-tag-push",
 	"displayName": "Git Tag & Push",
-	"description": "",
-	"version": "0.0.1",
+	"description": "Creates a git tag and pushes it afterwards",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
