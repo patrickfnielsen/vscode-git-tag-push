@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { createTag, deleteTag, pushWithTags } from './service';
+import { createTag, deleteTag, pushWithTags, getLatestTag } from './service';
 
 export async function createAndPushCommand() {
     if(!vscode.workspace.workspaceFolders)
@@ -11,8 +11,13 @@ export async function createAndPushCommand() {
 
     let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
     let tag = await vscode.window.showInputBox({
-        placeHolder: 'Type a tag...'
+        placeHolder: 'Type a tag...',
+        value: await getLatestTag(folderPath)
     });
+
+    if (tag === undefined) { // User cancelled 
+        return;
+    }
 
     if (!tag || !tag.trim()) {
         vscode.window.showErrorMessage('Invalid tag!');

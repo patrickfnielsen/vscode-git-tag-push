@@ -56,3 +56,26 @@ export function pushWithTags(cwd: string): Promise<string> {
         });
     });
 }
+
+export function getLatestTag(cwd: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        child_process.exec(gitPath + ' describe --abbrev=0', {
+            cwd: cwd
+        },
+        (error, stdout, stderr) => {
+            if (error ) {
+                return reject(`LATEST_TAG_FAILED: ${error.message}`);
+            }
+            if (stderr) {
+                return reject(`LATEST_TAG_FAILED: ${stderr}`);
+            }
+
+            let tag = "";
+            if (!/No names found/.test(stdout)) {
+                tag = stdout;
+            }
+            
+            resolve(tag);
+        });
+    });
+}
