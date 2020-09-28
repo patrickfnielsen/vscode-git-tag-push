@@ -2,17 +2,22 @@
 ## Features
 A simple extension to create a git tag and push it afterwards.
 
-If the tag follows SemVer, it will automatically increment the patch number. If its not the newest tag will be displayed per default.
-
 You can find the command under "Git: Tag & Push", it will ask for the version tag and a optional message.
+
+**Optional:**
+
+If the tag follows SemVer, it can automatically increment the patch number. 
+
+If its not able to find a SemVer, the latest tag will be suggested.
+
 
 
 ## Settings
 The following settings exists to control the behavior of tag handling:
 
-git-tag-push.behavior.incrementSemVer
+**git-tag-push.behavior.incrementSemVer**
 
-git-tag-push.behavior.suggestLatestTag
+**git-tag-push.behavior.suggestLatestTag**
 
 
 ## Release Notes

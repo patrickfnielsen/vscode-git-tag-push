@@ -39,12 +39,12 @@
             "properties": {
               "git-tag-push.behavior.incrementSemVer": {
                 "type": "boolean",
-                "default": true,
+                "default": false,
                 "description": "Automatically increment SemVer patch number"
               },
               "git-tag-push.behavior.suggestLatestTag": {
                 "type": "boolean",
-                "default": true,
+                "default": false,
                 "description": "Automatically suggest latests tag. Disabling this also disables SemVer increment support"
               }
             }
