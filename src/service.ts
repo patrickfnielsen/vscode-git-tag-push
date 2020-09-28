@@ -75,7 +75,18 @@ export function getLatestTag(cwd: string): Promise<string> {
                 tag = stdout;
             }
             
-            resolve(tag);
+            resolve(tag.replace(/\n/g, ''));
         });
     });
+}
+
+export function tryIncrementSemVerBuildNumber(tag: string): string {
+    let semVerRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
+    let match = tag.match(semVerRegex);
+
+    if(match != null) {
+        return `${match[1]}.${match[2]}.${parseInt(match[3]) + 1}${match[4] ? "." + match[4] : ""}`;
+    }
+
+    return tag;
 }

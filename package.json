@@ -33,7 +33,22 @@
 				"command": "extension.git-tag-and-push",
 				"title": "Git: Tag and Push"
 			}
-		]
+        ],
+        "configuration": {
+            "title": "Git Tag & Push",
+            "properties": {
+              "git-tag-push.behavior.incrementSemVer": {
+                "type": "boolean",
+                "default": true,
+                "description": "Automatically increment SemVer patch number"
+              },
+              "git-tag-push.behavior.suggestLatestTag": {
+                "type": "boolean",
+                "default": true,
+                "description": "Automatically suggest latests tag. Disabling this also disables SemVer increment support"
+              }
+            }
+        }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

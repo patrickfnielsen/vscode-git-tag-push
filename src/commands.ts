@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { createTag, deleteTag, pushWithTags, getLatestTag } from './service';
+import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber } from './service';
 
 export async function createAndPushCommand() {
     if(!vscode.workspace.workspaceFolders)
@@ -9,10 +9,21 @@ export async function createAndPushCommand() {
         return;
     }
 
+    const config = vscode.workspace.getConfiguration('git-tag-push');
     let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    let latestTag = ""
+
+    if (config.get('behavior.suggestLatestTag')) {
+        latestTag = await getLatestTag(folderPath);
+
+        if (config.get('behavior.incrementSemVer')) {
+            latestTag = tryIncrementSemVerBuildNumber(latestTag);
+        }
+    }
+
     let tag = await vscode.window.showInputBox({
         placeHolder: 'Type a tag...',
-        value: await getLatestTag(folderPath)
+        value: latestTag
     });
 
     if (tag === undefined) { // User cancelled 

@@ -1,4 +1,9 @@
 # Change Log
+## 1.0.4 - 28/09/2020
+
+- If the tag follows SemVer, automatically try and increment patch number.
+
+
 ## 1.0.3 - 25/09/2020
 
 - Added initial value to tag, will use the latest tag.
