@@ -59,7 +59,7 @@ export function pushWithTags(cwd: string): Promise<string> {
 
 export function getLatestTag(cwd: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        child_process.exec(gitPath + ' describe --abbrev=0', {
+        child_process.exec(gitPath + ' describe --abbrev=0 --tags', {
             cwd: cwd
         },
         (error, stdout, stderr) => {
