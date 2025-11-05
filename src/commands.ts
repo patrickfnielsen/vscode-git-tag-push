@@ -3,18 +3,21 @@ import * as vscode from 'vscode';
 import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber } from './service';
 
 export async function createAndPushCommand() {
-    if(!vscode.workspace.workspaceFolders)
-    {
+    if (!vscode.workspace.workspaceFolders) {
         vscode.window.showErrorMessage('Workspace folder path is undefined!');
         return;
     }
 
     const config = vscode.workspace.getConfiguration('git-tag-push');
     let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-    let latestTag = ""
+    let latestTag = "";
 
     if (config.get('behavior.suggestLatestTag')) {
-        latestTag = await getLatestTag(folderPath);
+        try {
+            latestTag = await getLatestTag(folderPath);
+        } catch (error) {
+            return;
+        }
 
         if (config.get('behavior.incrementSemVer')) {
             latestTag = tryIncrementSemVerBuildNumber(latestTag);
