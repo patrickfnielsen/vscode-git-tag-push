@@ -16,6 +16,14 @@ The following settings exists to control the behavior of tag handling:
 &nbsp;
 
 ## Release Notes
+## 1.0.5 - 05/11/2025
+
+- Now also supports pre release versions:
+    1.0.3-rc.3 -> 1.0.3-rc.4
+    1.0.3-alpha1 -> 1.0.3-alpha2
+
+- If no latest tag is found, user is asked to create one
+
 ## 1.0.4 - 28/09/2020
 
 - If the tag follows SemVer, automatically try and increment patch number.

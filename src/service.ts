@@ -12,15 +12,15 @@ export function createTag(tag: string, message: string, cwd: string): Promise<un
         child_process.exec(`${gitPath} tag -a -m "${message}" "${tag}"`, {
             cwd: cwd
         },
-        (error, stdout, stderr) => {
-            if (stderr) {
-                return reject(stderr);
-            }
-            if (error) {
-                return reject(error);
-            }
-            resolve();
-        });
+            (error, stdout, stderr) => {
+                if (stderr) {
+                    return reject(stderr);
+                }
+                if (error) {
+                    return reject(error);
+                }
+                resolve();
+            });
     });
 }
 
@@ -45,15 +45,15 @@ export function pushWithTags(cwd: string): Promise<string> {
         child_process.exec(gitPath + ' push --follow-tags', {
             cwd: cwd
         },
-        (error, stdout, stderr) => {
-            if (error) {
-                return reject(`PUSH_FAILED: ${error.message}`);
-            }
-            if (stderr && !/\[new tag\]/.test(stderr)) {
-                return reject(`PUSH_FAILED: ${stderr}`);
-            }
-            resolve('PUSHED');
-        });
+            (error, stdout, stderr) => {
+                if (error) {
+                    return reject(`PUSH_FAILED: ${error.message}`);
+                }
+                if (stderr && !/\[new tag\]/.test(stderr)) {
+                    return reject(`PUSH_FAILED: ${stderr}`);
+                }
+                resolve('PUSHED');
+            });
     });
 }
 
@@ -62,31 +62,71 @@ export function getLatestTag(cwd: string): Promise<string> {
         child_process.exec(gitPath + ' describe --abbrev=0 --tags', {
             cwd: cwd
         },
-        (error, stdout, stderr) => {
-            if (error ) {
-                return reject(`LATEST_TAG_FAILED: ${error.message}`);
-            }
-            if (stderr) {
-                return reject(`LATEST_TAG_FAILED: ${stderr}`);
-            }
+            async (error, stdout, stderr) => {
+                if (error || stderr) {
+                    const answer = await showConfirmDialog(error ? error.message : stderr);
+                    if (answer === true) {
+                        resolve("");
+                    }else{
+                        reject();
+                    }
+                }
 
-            let tag = "";
-            if (!/No names found/.test(stdout)) {
-                tag = stdout;
-            }
-            
-            resolve(tag.replace(/\n/g, ''));
-        });
+                let tag = "";
+                if (!/No names found/.test(stdout)) {
+                    tag = stdout;
+                }
+
+                resolve(tag.replace(/\n/g, ''));
+            });
     });
 }
 
-export function tryIncrementSemVerBuildNumber(tag: string): string {
-    let semVerRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
-    let match = tag.match(semVerRegex);
+async function showConfirmDialog(errorMsg: string): Promise<boolean> {
+    const answer = await vscode.window.showInformationMessage(
+        `There was a problem fetching latest tag \n
+        ${errorMsg}\n
+        Do you want to create a new tag?`,
+        { modal: true, },   // Makes it a modal dialog (blocks UI)
+        "Yes"
+    );
 
-    if(match != null) {
-        return `${match[1]}.${match[2]}.${parseInt(match[3]) + 1}${match[4] ? "." + match[4] : ""}`;
+    if (answer === "Yes") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export function tryIncrementSemVerBuildNumber(tag: string): string {
+    const semVerRegex = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
+    const match = tag.match(semVerRegex);
+
+    if (!match) {
+        return tag;
+    } 
+
+    const major = match[1];
+    const minor = match[2];
+    const patch = parseInt(match[3]);
+    const preRelease = match[4];
+
+    if (!preRelease) {
+        // No pre-release, just increment patch
+        return `${major}.${minor}.${patch + 1}`;
     }
 
-    return tag;
+    // Try to increment numeric part at the end of pre-release
+    const preReleaseParts = preRelease.split(".");
+    const lastPart = preReleaseParts[preReleaseParts.length - 1];
+
+    const numberMatch = lastPart.match(/^(.*?)(\d+)$/); // e.g., rc3 -> ["rc3","rc","3"]
+    if (numberMatch) {
+        preReleaseParts[preReleaseParts.length - 1] =
+            numberMatch[1] + (parseInt(numberMatch[2]) + 1);
+    } else {
+        // No number at the end, just leave it as-is
+    }
+
+    return `${major}.${minor}.${patch}-${preReleaseParts.join(".")}`;
 }
