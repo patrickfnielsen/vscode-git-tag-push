@@ -8,8 +8,29 @@ export async function createAndPushCommand() {
         return;
     }
 
+    // Handle multiple workspace folders
+    let folderPath: string;
+    if (vscode.workspace.workspaceFolders.length > 1) {
+        const items = vscode.workspace.workspaceFolders.map(folder => ({
+            label: folder.name,
+            description: folder.uri.fsPath,
+            folderPath: folder.uri.fsPath
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+            placeHolder: 'Select a workspace folder to create and push tag'
+        });
+
+        if (!selected) {
+            return; // User cancelled
+        }
+
+        folderPath = selected.folderPath;
+    } else {
+        folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    }
+
     const config = vscode.workspace.getConfiguration('git-tag-push');
-    let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
     let latestTag = "";
 
     if (config.get('behavior.suggestLatestTag')) {
@@ -49,14 +70,14 @@ export async function createAndPushCommand() {
             await createTag(tag, '', folderPath);
         }
     } catch (err) {
-        vscode.window.showErrorMessage(err);
+        vscode.window.showErrorMessage(String(err));
     }
 
     try {
         await pushWithTags(folderPath);
     } catch (err) {
-        deleteTag(tag, folderPath)
-        vscode.window.showErrorMessage(err);
+        deleteTag(tag, folderPath);
+        vscode.window.showErrorMessage(String(err));
     }
 
     vscode.window.showInformationMessage(`Tag '${tag}' pushed to remote`);
