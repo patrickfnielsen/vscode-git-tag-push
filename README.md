@@ -16,6 +16,10 @@ The following settings exists to control the behavior of tag handling:
 &nbsp;
 
 ## Release Notes
+## 1.0.7 - 19/1/2026
+
+- Support multiple workspace folders (Thanks to trashhead)
+
 ## 1.0.6 - 05/11/2025
 
 - Now also supports pre release versions:
