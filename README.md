@@ -16,6 +16,10 @@ The following settings exists to control the behavior of tag handling:
 &nbsp;
 
 ## Release Notes
+## 1.0.8 - 15/9/2026
+
+- When selecting between multiple workspace folders, repos with unpushed commits are now prefixed with an asterisk (*)
+
 ## 1.0.7 - 19/1/2026
 
 - Support multiple workspace folders (Thanks to trashhead)

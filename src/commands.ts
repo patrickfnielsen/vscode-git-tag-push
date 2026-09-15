@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber } from './service';
+import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber, hasUnpushedCommits } from './service';
 
 export async function createAndPushCommand() {
     if (!vscode.workspace.workspaceFolders) {
@@ -11,10 +11,13 @@ export async function createAndPushCommand() {
     // Handle multiple workspace folders
     let folderPath: string;
     if (vscode.workspace.workspaceFolders.length > 1) {
-        const items = vscode.workspace.workspaceFolders.map(folder => ({
-            label: folder.name,
-            description: folder.uri.fsPath,
-            folderPath: folder.uri.fsPath
+        const items = await Promise.all(vscode.workspace.workspaceFolders.map(async folder => {
+            const unpushed = await hasUnpushedCommits(folder.uri.fsPath);
+            return {
+                label: unpushed ? `* ${folder.name}` : folder.name,
+                description: folder.uri.fsPath,
+                folderPath: folder.uri.fsPath
+            };
         }));
 
         const selected = await vscode.window.showQuickPick(items, {

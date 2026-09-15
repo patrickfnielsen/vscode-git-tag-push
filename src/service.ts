@@ -57,6 +57,22 @@ export function pushWithTags(cwd: string): Promise<string> {
     });
 }
 
+export function hasUnpushedCommits(cwd: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        child_process.exec(`${gitPath} rev-list --count @{u}..HEAD`, {
+            cwd: cwd
+        },
+            (error, stdout, stderr) => {
+                // No upstream configured or other git error: can't determine, assume none
+                if (error || stderr) {
+                    return resolve(false);
+                }
+                const count = parseInt(stdout.trim(), 10);
+                resolve(!isNaN(count) && count > 0);
+            });
+    });
+}
+
 export function getLatestTag(cwd: string): Promise<string> {
     return new Promise((resolve, reject) => {
         child_process.exec(gitPath + ' describe --abbrev=0 --tags', {
