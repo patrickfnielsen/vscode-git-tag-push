@@ -13,12 +13,15 @@ The following settings exists to control the behavior of tag handling:
 
 *git-tag-push.behavior.suggestLatestTag* - If enabled it will suggest the last tag as the default value, disabling this also disables SemVer increments.
 
+*git-tag-push.behavior.markUnpushedRepos* - If enabled (default), repos with unpushed commits are prefixed with an asterisk (*) when selecting between multiple workspace folders.
+
 &nbsp;
 
 ## Release Notes
 ## 1.0.8 - 15/9/2026
 
 - When selecting between multiple workspace folders, repos with unpushed commits are now prefixed with an asterisk (*)
+- Added *git-tag-push.behavior.markUnpushedRepos* setting to control the unpushed-commits asterisk indicator (default: on)
 
 ## 1.0.7 - 19/1/2026
 

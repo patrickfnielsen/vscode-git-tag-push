@@ -46,6 +46,11 @@
                 "type": "boolean",
                 "default": false,
                 "description": "Automatically suggest latests tag. Disabling this also disables SemVer increment support"
+              },
+              "git-tag-push.behavior.markUnpushedRepos": {
+                "type": "boolean",
+                "default": true,
+                "description": "When selecting between multiple workspace folders, prefix repos with unpushed commits with an asterisk (*)"
               }
             }
         }

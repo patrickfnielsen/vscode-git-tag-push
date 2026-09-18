@@ -57,20 +57,41 @@ export function pushWithTags(cwd: string): Promise<string> {
     });
 }
 
-export function hasUnpushedCommits(cwd: string): Promise<boolean> {
-    return new Promise((resolve) => {
-        child_process.exec(`${gitPath} rev-list --count @{u}..HEAD`, {
-            cwd: cwd
-        },
-            (error, stdout, stderr) => {
-                // No upstream configured or other git error: can't determine, assume none
-                if (error || stderr) {
-                    return resolve(false);
-                }
-                const count = parseInt(stdout.trim(), 10);
-                resolve(!isNaN(count) && count > 0);
-            });
-    });
+// Minimal shape of the built-in vscode.git extension API (v1) that we rely on.
+interface GitRepositoryState {
+    HEAD?: { ahead?: number };
+}
+interface GitRepository {
+    rootUri: vscode.Uri;
+    state: GitRepositoryState;
+}
+interface GitAPI {
+    repositories: GitRepository[];
+}
+interface GitExtensionExports {
+    getAPI(version: 1): GitAPI;
+}
+
+// Uses the built-in git extension's already-tracked ahead-count instead of spawning git processes.
+export async function getUnpushedFolderPaths(folders: readonly vscode.WorkspaceFolder[]): Promise<Set<string>> {
+    const unpushed = new Set<string>();
+
+    const gitExtension = vscode.extensions.getExtension<GitExtensionExports>('vscode.git');
+    if (!gitExtension) {
+        return unpushed;
+    }
+
+    const exports = gitExtension.isActive ? gitExtension.exports : await gitExtension.activate();
+    const api = exports.getAPI(1);
+
+    for (const folder of folders) {
+        const repo = api.repositories.find(r => r.rootUri.fsPath === folder.uri.fsPath);
+        if (repo?.state.HEAD?.ahead) {
+            unpushed.add(folder.uri.fsPath);
+        }
+    }
+
+    return unpushed;
 }
 
 export function getLatestTag(cwd: string): Promise<string> {

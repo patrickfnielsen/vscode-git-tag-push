@@ -2,6 +2,7 @@
 ## 1.0.8 - 15/9/2026
 
 - When selecting between multiple workspace folders, repos with unpushed commits are now prefixed with an asterisk (*)
+- Added *git-tag-push.behavior.markUnpushedRepos* setting to control the unpushed-commits asterisk indicator (default: on)
 
 ## 1.0.7 - 19/1/2026
 
