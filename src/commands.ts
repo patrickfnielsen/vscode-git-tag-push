@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber } from './service';
+import { createTag, deleteTag, pushWithTags, getLatestTag, tryIncrementSemVerBuildNumber, getUnpushedFolderPaths } from './service';
 
 export async function createAndPushCommand() {
     if (!vscode.workspace.workspaceFolders) {
@@ -8,11 +8,17 @@ export async function createAndPushCommand() {
         return;
     }
 
+    const config = vscode.workspace.getConfiguration('git-tag-push');
+
     // Handle multiple workspace folders
     let folderPath: string;
     if (vscode.workspace.workspaceFolders.length > 1) {
+        const markUnpushedRepos = config.get('behavior.markUnpushedRepos');
+        const unpushedFolderPaths = markUnpushedRepos
+            ? await getUnpushedFolderPaths(vscode.workspace.workspaceFolders)
+            : new Set<string>();
         const items = vscode.workspace.workspaceFolders.map(folder => ({
-            label: folder.name,
+            label: unpushedFolderPaths.has(folder.uri.fsPath) ? `* ${folder.name}` : folder.name,
             description: folder.uri.fsPath,
             folderPath: folder.uri.fsPath
         }));
@@ -30,7 +36,6 @@ export async function createAndPushCommand() {
         folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
     }
 
-    const config = vscode.workspace.getConfiguration('git-tag-push');
     let latestTag = "";
 
     if (config.get('behavior.suggestLatestTag')) {
